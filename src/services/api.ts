@@ -5,4 +5,14 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.setItem('isLogged', 'false');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;

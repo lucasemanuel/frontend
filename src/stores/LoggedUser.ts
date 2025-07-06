@@ -14,7 +14,6 @@ export const useLoggedUserStore = defineStore("loggedUser", {
       this.user.name = user.name;
       this.user.hasAdminPermissions = user.hasAdminPermissions;
       this.user.isLogged = user.isLogged;
-
     },
     clearUser() {
       this.user.name = "";

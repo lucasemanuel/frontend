@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import NotFoundView from '@/views/NotFoundView.vue'
-import { useLoggedUserStore } from '@/stores/LoggedUser'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,9 +31,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const loggedUserStore = useLoggedUserStore()
-
-  if (to.meta.requiresAuth && !loggedUserStore.isLogged) {
+  if (to.name === 'login' && localStorage.getItem('isLogged')) {
+    next({ name: 'dashboard' })
+  } else if (to.meta.requiresAuth && !localStorage.getItem('isLogged')) {
     next({ name: 'login' })
   } else {
     next()

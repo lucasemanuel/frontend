@@ -1,6 +1,19 @@
 
 <script setup lang="ts">
 import { Plane, LogOut } from 'lucide-vue-next'
+
+import { useLoggedUserStore } from '@/stores/LoggedUser'
+import api from '@/services/api'
+const loggedUserStore = useLoggedUserStore()
+
+function logout() {
+  localStorage.removeItem('isLogged')
+  api.post('/auth/logout').then().finally(() => {
+    localStorage.removeItem('isLogged')
+    loggedUserStore.clearUser();
+
+  })
+}
 </script>
 
 <template>
@@ -26,6 +39,7 @@ import { Plane, LogOut } from 'lucide-vue-next'
                 <span class="px-2 py-2 text-sm leading-5 font-semibold text-slate-800">John Doe</span>
               </div>
               <a
+                @click="logout"
                 href="#"
                 class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm leading-5 font-semibold text-slate-800 hover:border-violet-300 hover:text-violet-800 active:border-slate-200"
               >
