@@ -2,10 +2,14 @@
 import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 
-import { LayoutLogged } from './components/layouts'
-import { Toaster } from '@/components/ui/sonner'
-
 import 'vue-sonner/style.css'
+
+import { LayoutLogged } from '@/components/layouts'
+import { Toaster } from '@/components/ui/sonner'
+import { useLoggedUserStore } from './stores/LoggedUser'
+
+const loggedUserStore = useLoggedUserStore()
+
 onMounted(async () => {
 
 })
@@ -14,7 +18,12 @@ onMounted(async () => {
 <template>
   <Toaster />
 
-  <LayoutLogged>
+  <template v-if="loggedUserStore.isLogged">
+    <LayoutLogged>
+      <RouterView />
+    </LayoutLogged>
+  </template>
+  <template v-else>
     <RouterView />
-  </LayoutLogged>
+  </template>
 </template>

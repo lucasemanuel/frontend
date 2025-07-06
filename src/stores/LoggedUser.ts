@@ -28,6 +28,9 @@ export const useLoggedUserStore = defineStore("loggedUser", {
     },
     hasAdminPermissions: (state) => {
       return state.user.hasAdminPermissions;
+    },
+    isLogged: (state) => {
+      return state.user.isLogged;
     }
   },
 });
