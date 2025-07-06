@@ -1,9 +1,10 @@
-
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Plane, LogOut } from 'lucide-vue-next'
 
 import { useLoggedUserStore } from '@/stores/LoggedUser'
 import api from '@/services/api'
+
 const loggedUserStore = useLoggedUserStore()
 
 function logout() {
@@ -11,9 +12,10 @@ function logout() {
   api.post('/auth/logout').then().finally(() => {
     localStorage.removeItem('isLogged')
     loggedUserStore.clearUser();
-
   })
 }
+
+const name = computed(() => loggedUserStore.name.trim().slice(0, 15))
 </script>
 
 <template>
@@ -36,7 +38,7 @@ function logout() {
 
             <div class="flex items-center gap-2">
               <div class="relative inline-block">
-                <span class="px-2 py-2 text-sm leading-5 font-semibold text-slate-800">John Doe</span>
+                <span class="px-2 py-2 text-sm leading-5 font-semibold text-slate-800">{{ name }}</span>
               </div>
               <a
                 @click="logout"
