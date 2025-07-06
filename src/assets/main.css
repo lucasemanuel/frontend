@@ -5,7 +5,10 @@
   color: var(--text-color);
   background-color: var(--background-color);
   min-height: 100dvh;
-  background-color: azure;
   display: flex;
   flex-direction: column;
+}
+
+button, a {
+  cursor: pointer;
 }
