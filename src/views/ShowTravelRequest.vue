@@ -145,7 +145,7 @@ function updateTravelRequestStatus(id: number, status: string) {
             </div>
           </div>
           <p class="text-sm sm:text-center -mb-1" :class="{hidden: !travelRequest?.reason}">Motivo</p>
-          <p class="sm:text-lg sm:text-center font-semibold mb-2" :class="{hidden: !travelRequest?.reason}">Onboarding de desenvolvedor Full Stack</p>
+          <p class="sm:text-lg sm:text-center font-semibold mb-2" :class="{hidden: !travelRequest?.reason}">{{ travelRequest?.reason }}</p>
         </div>
       </CardContent>
       <CardFooter class="w-full justify-between" v-if="loggedUserStore.hasAdminPermissions">
