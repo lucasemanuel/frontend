@@ -27,6 +27,11 @@ import {
 } from "@/components/ui/range-calendar";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
+import { useFiltersTravelStore } from '@/stores/FiltersTravel'
+import { format } from 'date-fns'
+
+const filtersTravelStore = useFiltersTravelStore();
+
 const today = new Date();
 const period = ref({
   start: new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate()).subtract({
@@ -94,6 +99,38 @@ watch(secondMonthPlaceholder, (_secondMonthPlaceholder) => {
 });
 
 import { Label } from "@/components/ui/label";
+
+const destination = ref("");
+const status = ref("");
+
+const applyFilters = () => {
+  const filters = {
+    destination,
+    status,
+    startDate: period.value.start
+      ? format(toDate(period.value.start), 'yyyy-MM-dd')
+      : null,
+    endDate: period.value.end
+      ? format(toDate(period.value.end), 'yyyy-MM-dd')
+      : null,
+  }
+
+  console.log("Aplicando filtros:", filters);
+  filtersTravelStore.setFilters(filters);
+  filtersTravelStore.setDispatched(new Date().toISOString());
+};
+
+const clearFilters = () => {
+  status.value = "";
+  destination.value = "";
+  filtersTravelStore.setFilters({filters: {
+    destination: "",
+    status: "",
+    startDate: null,
+    endDate: null,
+  }});
+  filtersTravelStore.setDispatched(new Date().toISOString());
+};
 </script>
 
 <template>
@@ -106,18 +143,18 @@ import { Label } from "@/components/ui/label";
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div class="grid w-full max-w-sm items-center gap-1.5">
             <Label for="destination">Destino</Label>
-            <Input id="destination" type="text" placeholder="Belo Horizonte" />
+            <Input id="destination" v-model="destination" type="text" placeholder="Belo Horizonte" />
           </div>
           <div class="grid w-full max-w-sm items-center gap-1.5">
             <Label for="status">Destino</Label>
-            <Select id="status">
+            <Select id="status" v-model="status">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Selecionar o status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="0">Nenhum</SelectItem>
-                  <SelectItem value="pending">Pendente</SelectItem>
+                  <SelectItem value="requested">Pendente</SelectItem>
                   <SelectItem value="approved">Aprovado</SelectItem>
                   <SelectItem value="canceled">Rejeitado</SelectItem>
                 </SelectGroup>
@@ -267,8 +304,8 @@ import { Label } from "@/components/ui/label";
             </Popover>
           </div>
           <div class="flex col-span-1 items-end justify-between">
-            <Button variant="outline">Limpar filtros</Button>
-            <Button>Aplicar filtros</Button>
+            <Button variant="outline" type="button" @click.prevent="clearFilters">Limpar filtros</Button>
+            <Button type="submit" @click.prevent="applyFilters">Aplicar filtros</Button>
           </div>
         </div>
       </form>

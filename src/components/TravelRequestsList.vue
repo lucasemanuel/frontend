@@ -30,8 +30,10 @@ import type { PaginatedResponse, Travel } from "@/types";
 import { RouterLink } from "vue-router";
 import TravelStatusBadge from "@/components/TravelStatusBadge.vue";
 import { useLoggedUserStore } from '@/stores/LoggedUser'
+import { useFiltersTravelStore } from '@/stores/FiltersTravel'
 
 const loggedUserStore = useLoggedUserStore();
+const filtersTravelStore = useFiltersTravelStore();
 
 const travelRequests = ref<PaginatedResponse<Travel>>({
   current_page: 0,
@@ -51,14 +53,35 @@ const travelRequests = ref<PaginatedResponse<Travel>>({
 
 const currentPage = ref(1);
 const loader = ref(false);
+const filters = computed(() => {
+  // Monta a query string baseada nos filtros ativos
+  const params = [];
+  if (filtersTravelStore.filters.destination) params.push(`destination=${encodeURIComponent(filtersTravelStore.filters.destination)}`);
+  if (filtersTravelStore.filters.status) params.push(`status=${encodeURIComponent(filtersTravelStore.filters.status)}`);
+  if (filtersTravelStore.filters.startDate) params.push(`departure_date=${encodeURIComponent(filtersTravelStore.filters.startDate)}`);
+  if (filtersTravelStore.filters.endDate) params.push(`return_date=${encodeURIComponent(filtersTravelStore.filters.endDate)}`);
+  return params.length ? `&${params.join('&')}` : '';
+});
 
 watch(currentPage, (newValue) => {
   fetchTravelRequests(newValue);
 });
 
+watch(
+  () => filtersTravelStore.filters.dispatch,
+  () => {
+    console.log('Filtro mudou:', filters.value)
+    if (currentPage.value === 0) {
+      fetchTravelRequests(0);
+    } else {
+      currentPage.value = 0;    // aqui você pode fazer qualquer ação quando o filtro mudar
+    }
+  }
+)
+
 function fetchTravelRequests(page: number) {
   loader.value = true;
-  api.get(`/travel-requests?page=${page}`).then((response) => {
+  api.get(`/travel-requests?page=${page}${filters.value}`).then((response) => {
     travelRequests.value = response.data;
   }).finally(() => {
     loader.value = false;
