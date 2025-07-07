@@ -27,7 +27,8 @@ function goToDashboard() {
 
 function approve() {
   if (travelRequest.value?.id !== undefined) {
-    updateTravelRequestStatus(travelRequest.value.id, 'approved').then(() => {
+    updateTravelRequestStatus(travelRequest.value.id, 'approved').then((response) => {
+      travelRequest.value = response.data;
       toast.success('Viagem aprovada', {
         description: `Viagem de ${travelRequest?.value?.user?.name} com destino ${travelRequest?.value?.destination || ''} aprovada com sucesso.`,
       })
@@ -37,7 +38,8 @@ function approve() {
 
 function denied() {
   if (travelRequest.value?.id !== undefined) {
-    updateTravelRequestStatus(travelRequest.value.id, 'canceled').then(() => {
+    updateTravelRequestStatus(travelRequest.value.id, 'canceled').then((response) => {
+      travelRequest.value = response.data;
       toast.error('Viagem negada', {
         description: `Viagem de ${travelRequest?.value?.user?.name} com destino ${travelRequest?.value?.destination || ''} foi negada.`,
       })
@@ -69,6 +71,7 @@ function updateTravelRequestStatus(id: number, status: string) {
     toast.error('Erro ao atualizar o status da viagem', {
       description: error.response?.data?.message || 'Ocorreu um erro ao atualizar o status da viagem.',
     });
+    throw error;
   });
 }
 </script>
