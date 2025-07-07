@@ -152,7 +152,7 @@ const clearFilters = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="0">Nenhum</SelectItem>
+                  <SelectItem value="0">Todos</SelectItem>
                   <SelectItem value="requested">Pendente</SelectItem>
                   <SelectItem value="approved">Aprovado</SelectItem>
                   <SelectItem value="canceled">Rejeitado</SelectItem>
