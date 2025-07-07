@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -12,11 +9,11 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.status === 401) {
-      const isLogged = localStorage.hasItem('isLogged') && localStorage.getItem('isLogged');
-      localStorage.setItem('isLogged', 'false');
+      const isLogged = localStorage.getItem('isLogged');
+      localStorage.removeItem('isLogged');
 
       if (isLogged) {
-        router.push({ name: 'login' });
+        window.location.href = '/';
       }
     }
     return Promise.reject(error);
