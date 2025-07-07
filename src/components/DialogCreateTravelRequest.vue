@@ -165,6 +165,7 @@ const onSubmit = handleSubmit((values) => {
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
                   <Calendar
+                    locale="pt-BR"
                     v-model:placeholder="placeholder"
                     :model-value="valueDepartureDate"
                     calendar-label="Data de partida"
@@ -201,6 +202,7 @@ const onSubmit = handleSubmit((values) => {
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
                   <Calendar
+                    locale="pt-BR"
                     v-model:placeholder="placeholder"
                     :model-value="valueReturnDate"
                     calendar-label="Data de retorno"

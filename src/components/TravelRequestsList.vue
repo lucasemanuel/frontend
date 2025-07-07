@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   Pagination,
   PaginationContent,
@@ -25,19 +24,66 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import api from "@/services/api";
+import { computed, ref, watch } from "vue";
+import type { PaginatedResponse, Travel } from "@/types";
+import { RouterLink } from "vue-router";
+import TravelStatusBadge from "@/components/TravelStatusBadge.vue";
+import { useLoggedUserStore } from '@/stores/LoggedUser'
+
+const loggedUserStore = useLoggedUserStore();
+
+const travelRequests = ref<PaginatedResponse<Travel>>({
+  current_page: 0,
+  data: [],
+  first_page_url: "",
+  from: 0,
+  last_page: 0,
+  last_page_url: "",
+  links: [],
+  next_page_url: null,
+  path: "",
+  per_page: 0,
+  prev_page_url: null,
+  to: 0,
+  total: 0
+});
+
+const currentPage = ref(1);
+const loader = ref(false);
+
+watch(currentPage, (newValue) => {
+  fetchTravelRequests(newValue);
+});
+
+function fetchTravelRequests(page: number) {
+  loader.value = true;
+  api.get(`/travel-requests?page=${page}`).then((response) => {
+    travelRequests.value = response.data;
+  }).finally(() => {
+    loader.value = false;
+  });
+}
+
+const resultsDisplayed = computed(() => {
+  const isLastPage = travelRequests.value.current_page == travelRequests.value.last_page;
+  return isLastPage ? travelRequests.value.total : travelRequests.value.per_page * travelRequests.value.current_page;
+});
+
+fetchTravelRequests(0)
 </script>
 
 <template>
   <Card>
     <CardHeader>
       <CardTitle>Pedidos de Viagem</CardTitle>
-      <CardDescription>Aqui você encontra todos os pedidos de viagem.</CardDescription>
+      <CardDescription>Resultados: {{ resultsDisplayed }}/{{ travelRequests.total }}</CardDescription>
     </CardHeader>
     <CardContent>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead class="min-w-[150px] text-start">Nome</TableHead>
+            <TableHead class="min-w-[150px] text-start" v-if="loggedUserStore.hasAdminPermissions">Nome</TableHead>
             <TableHead class="min-w-[120px] text-start">Data de Ida</TableHead>
             <TableHead class="min-w-[120px] text-start">Data de Retorno</TableHead>
             <TableHead class="min-w-[150px] text-start">Destino</TableHead>
@@ -46,141 +92,27 @@ import {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell class="text-slate-600">João Silva</TableCell>
-            <TableCell>2023-09-10</TableCell>
-            <TableCell>2023-09-15</TableCell>
-            <TableCell>São Paulo</TableCell>
+          <TableRow v-for="(travel, idx) in travelRequests.data" :key="idx">
+            <TableCell class="font-semibold" v-if="loggedUserStore.hasAdminPermissions">{{ travel.user?.name }}</TableCell>
+            <TableCell>{{ travel.departure_date }}</TableCell>
+            <TableCell>{{ travel.return_date }}</TableCell>
+            <TableCell>{{ travel.destination }}</TableCell>
             <TableCell>
-              <Badge variant="default" class="bg-emerald-100 text-emerald-800">Aprovado</Badge>
+              <TravelStatusBadge :status="travel.status" />
             </TableCell>
             <TableCell class="text-end">
-              <Button variant="outline" size="sm" class="gap-1">
-                Ver
-                <svg
-                  class="size-5 text-slate-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </Button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell class="text-slate-600">Maria Oliveira</TableCell>
-            <TableCell>2023-10-01</TableCell>
-            <TableCell>2023-10-05</TableCell>
-            <TableCell>Rio de Janeiro</TableCell>
-            <TableCell>
-              <Badge variant="default" class="bg-yellow-100 text-yellow-800">Pendente</Badge>
-            </TableCell>
-            <TableCell class="text-end">
-              <Button variant="outline" size="sm" class="gap-1">
-                Ver
-                <svg
-                  class="size-5 text-slate-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </Button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell class="text-slate-600">Carlos Souza</TableCell>
-            <TableCell>2023-11-12</TableCell>
-            <TableCell>2023-11-18</TableCell>
-            <TableCell>Belo Horizonte</TableCell>
-            <TableCell>
-              <Badge variant="default" class="bg-red-100 text-red-800">Rejeitado</Badge>
-            </TableCell>
-            <TableCell class="text-end">
-              <Button variant="outline" size="sm" class="gap-1">
-                Ver
-                <svg
-                  class="size-5 text-slate-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </Button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell class="text-slate-600">Ana Paula</TableCell>
-            <TableCell>2023-12-03</TableCell>
-            <TableCell>2023-12-10</TableCell>
-            <TableCell>Curitiba</TableCell>
-            <TableCell>
-              <Badge variant="default" class="bg-emerald-100 text-emerald-800">Aprovado</Badge>
-            </TableCell>
-            <TableCell class="text-end">
-              <Button variant="outline" size="sm" class="gap-1">
-                Ver
-                <svg
-                  class="size-5 text-slate-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </Button>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell class="text-slate-600">Pedro Lima</TableCell>
-            <TableCell>2024-01-15</TableCell>
-            <TableCell>2024-01-20</TableCell>
-            <TableCell>Salvador</TableCell>
-            <TableCell>
-              <Badge variant="default" class="bg-yellow-100 text-yellow-800">Pendente</Badge>
-            </TableCell>
-            <TableCell class="text-end">
-              <Button variant="outline" size="sm" class="gap-1">
-                Ver
-                <svg
-                  class="size-5 text-slate-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </Button>
+              <RouterLink :to="`/travel/${travel.id}`">
+                <Button size="sm" class="gap-1">
+                Detalhes
+                </Button>
+              </RouterLink>
             </TableCell>
           </TableRow>
         </TableBody>
       </Table>
     </CardContent>
     <CardFooter>
-      <Pagination v-slot="{ page }" :items-per-page="10" :total="30" :default-page="2">
+      <Pagination :disabled="loader" v-model:page="currentPage" v-slot="{ page }" :items-per-page="travelRequests.per_page" :total="travelRequests.total" :default-page="1">
         <PaginationContent v-slot="{ items }">
           <PaginationPrevious />
           <template v-for="(item, index) in items" :key="index">
@@ -192,7 +124,7 @@ import {
               {{ item.value }}
             </PaginationItem>
           </template>
-          <PaginationEllipsis :index="4" />
+          <PaginationEllipsis :index="2" />
           <PaginationNext />
         </PaginationContent>
       </Pagination>

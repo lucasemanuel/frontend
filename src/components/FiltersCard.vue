@@ -35,7 +35,7 @@ const period = ref({
   end: new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate()),
 }) as Ref<DateRange>;
 
-const locale = ref("en-US");
+const locale = ref("pt-BR");
 const formatter = useDateFormatter(locale.value);
 
 const placeholder = ref(period.value.start) as Ref<DateValue>;
@@ -157,6 +157,7 @@ import { Label } from "@/components/ui/label";
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
                 <RangeCalendarRoot
+                  locale="pt-BR"
                   v-slot="{ weekDays }"
                   v-model="period"
                   v-model:placeholder="placeholder"
