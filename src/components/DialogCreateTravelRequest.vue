@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import api from '@/services/api'
 
 import { DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
@@ -21,7 +22,6 @@ import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -61,6 +61,7 @@ const formSchema = toTypedSchema(z.object({
       const inputDate = new Date(val)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
+      today.setDate(today.getDate() - 1)
       return inputDate >= today
     }, {
       message: 'Só é possível selecionar datas a partir de hoje.',
@@ -100,8 +101,26 @@ const valueReturnDate = computed({
 })
 
 const onSubmit = handleSubmit((values) => {
-  toast('Solicitação Enviada', {
-    description: 'Sua solicitação foi enviada e logo será avaliada.',
+  console.log('Form values:', values)
+  api.post('/travel-requests', {
+    destination: values.destination,
+    departure_date: values.departureDate,
+    return_date: values.returnDate,
+    reason: values.reason,
+  }).then(() => {
+    isOpen.value = false
+    toast.success('Solicitação Enviada', {
+      description: 'Sua solicitação foi enviada e logo será avaliada.',
+    })
+  }).catch((error) => {
+    let errorMessage = 'Ocorreu um erro ao enviar sua solicitação. Tente novamente mais tarde.';
+    if (error.status === 422) {
+      const firstErrorKey = error?.response?.data?.errors ? Object.keys(error.response.data.errors)[0] : null;
+      errorMessage = firstErrorKey ? error.response.data.errors[firstErrorKey][0] : 'Erro de validação';
+    }
+    toast.error('Erro ao enviar solicitação', {
+      description: errorMessage,
+    })
   })
 })
 </script>
@@ -214,7 +233,7 @@ const onSubmit = handleSubmit((values) => {
         </form>
       </div>
       <DialogFooter>
-        <Button type="submit" form="form-travel" @click="isOpen = false">
+        <Button type="submit" form="form-travel">
           Enviar solicitação
         </Button>
       </DialogFooter>
