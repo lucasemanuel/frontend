@@ -1,39 +1,28 @@
-# frontend
+# Instalação do projeto
+Esse projeto foi desenvolvido com docker, os passos aqui descritos devem ser seguidos de maneira sequencial
 
-This template should help get you started developing with Vue 3 in Vite.
+## Clonar repositório
+É possível clonar com SSH ou HTTP
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+Clonar com HTTP:
+```
+git clone https://github.com/lucasemanuel/frontend.git
+```
+Ou
+Clonar com SSH:
+```
+git clone git@github.com:lucasemanuel/frontend.git
 ```
 
-### Compile and Hot-Reload for Development
+## Configurando variáveis de ambiente
+Para configurar as variáveis deve-se copiar o arquivo `.env.example` e renomar para `.env`
 
-```sh
-npm run dev
+## Subir container com docker
+Para criar e subir o container é necessário executar o seguinte comando
+
+```
+docker compose up --build
 ```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## Considerações
+Agora o frontend já está sendo executada na porta `5173`.
