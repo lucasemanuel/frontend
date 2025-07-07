@@ -104,8 +104,8 @@ function updateTravelRequestStatus(id: number, status: string) {
             </Avatar>
             <div class="flex justify-between sm:items-center w-full">
               <div>
-                <p class="-mb-1">Lucas Emanuel</p>
-                <span class="text-sm text-slate-600">lucaxemanuel@gmail.com</span>
+                <p class="-mb-1">{{ travelRequest?.user.name }}</p>
+                <span class="text-sm text-slate-600">{{ travelRequest?.user.email }}</span>
               </div>
               <TravelStatusBadge class="hidden sm:block" :status="travelRequest?.status ?? ''" />
             </div>
