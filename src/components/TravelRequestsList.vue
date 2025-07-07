@@ -70,7 +70,6 @@ watch(currentPage, (newValue) => {
 watch(
   () => filtersTravelStore.filters.dispatch,
   () => {
-    console.log('Filtro mudou:', filters.value)
     if (currentPage.value === 0) {
       fetchTravelRequests(0);
     } else {

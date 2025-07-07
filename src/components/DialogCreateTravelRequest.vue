@@ -101,7 +101,6 @@ const valueReturnDate = computed({
 })
 
 const onSubmit = handleSubmit((values) => {
-  console.log('Form values:', values)
   api.post('/travel-requests', {
     destination: values.destination,
     departure_date: values.departureDate,

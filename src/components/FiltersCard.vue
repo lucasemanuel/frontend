@@ -115,7 +115,6 @@ const applyFilters = () => {
       : null,
   }
 
-  console.log("Aplicando filtros:", filters);
   filtersTravelStore.setFilters(filters);
   filtersTravelStore.setDispatched(new Date().toISOString());
 };
